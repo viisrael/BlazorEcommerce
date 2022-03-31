@@ -68,7 +68,7 @@
                                                          .Distinct().ToArray();
 
                     var words = product.Description.Split()
-                                                  .Select(s => s.Trim(punctuation));
+                                                   .Select(s => s.Trim(punctuation));
 
                     foreach (var word in words)
                     {
@@ -96,7 +96,8 @@
 
         private async Task<List<Product>> FindProductsBySearchText(string searchText)
         {
-            return await _context.Products.Where(p => p.Title.ToLower().Contains(searchText.ToLower()) || p.Description.ToLower().Contains(searchText.ToLower())
+            return await _context.Products.Where(p =>  p.Title.ToLower().Contains(searchText.ToLower()) || 
+                                                 p.Description.ToLower().Contains(searchText.ToLower())
                                                                 )
                                                           .Include(p => p.Variants)
                                                           .ToListAsync();
