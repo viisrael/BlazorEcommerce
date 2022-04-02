@@ -5,9 +5,16 @@
 
 <PageTitle>My Shop</PageTitle>
 
-<ProductList />
+@if (SearchText == null && CategoryUrl == null)
+{
+    <FeaturedProduct />
+}
+else
+{
+    <ProductList />
+}
 
-@code{
+@code {
     [Parameter]
     public string? CategoryUrl { get; set; }
 
@@ -19,6 +26,6 @@
         if (SearchText != null)
             await ProductService.SearchProducts(SearchText);
         else
-           await ProductService.GetProducts(CategoryUrl);
+            await ProductService.GetProducts(CategoryUrl);
     }
 }
