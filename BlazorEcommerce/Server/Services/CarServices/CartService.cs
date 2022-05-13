@@ -13,7 +13,7 @@ namespace BlazorEcommerce.Server.Services.CarServices
             _httpContextAccessor = httpContextAccessor;
         }
 
-        private int GetUserId()=> int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         public async Task<ServiceResponse<List<CartProductResponse>>> GetCartProductAsync(List<CartItem> cartItems)
         {
             var result = new ServiceResponse<List<CartProductResponse>>()
@@ -61,17 +61,60 @@ namespace BlazorEcommerce.Server.Services.CarServices
             _context.CartItems.AddRange(cartItems);
             await _context.SaveChangesAsync();
 
-            return await GetCartProductAsync(await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync());
+            return await GetDbCartProducts();
         }
 
         public async Task<ServiceResponse<int>> GetCartItemsCount()
         {
-            var count= (await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync()).Count;
+            var count = (await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync()).Count;
 
             return new ServiceResponse<int>
             {
                 Data = count,
             };
+        }
+
+        public async Task<ServiceResponse<List<CartProductResponse>>> GetDbCartProducts()
+        {
+            return await GetCartProductAsync(await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync());
+        }
+
+        public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
+        {
+            cartItem.UserId = GetUserId();
+
+            var sameItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
+                                                                              ci.ProductTypeId == cartItem.ProductTypeId &&
+                                                                              ci.UserId == cartItem.UserId);
+
+            if (sameItem == null)
+            {
+                _context.CartItems.Add(cartItem);
+            }
+            else
+            {
+                sameItem.Quantity = cartItem.Quantity;
+            }
+
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data = true };
+        }
+
+        public async Task<ServiceResponse<bool>> UpdateQuantity(CartItem cartItem)
+        {
+            var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
+                                                                              ci.ProductTypeId == cartItem.ProductTypeId &&
+                                                                              ci.UserId == GetUserId());
+
+            if(dbCartItem == null)
+                return new ServiceResponse<bool> { Data= false, Success=false,Message= "Cart item does not exists." };
+
+            dbCartItem.Quantity = cartItem.Quantity;
+            await _context.SaveChangesAsync();
+
+            return new ServiceResponse<bool> { Data= true };
+
         }
     }
 }
