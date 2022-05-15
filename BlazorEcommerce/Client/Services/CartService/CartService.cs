@@ -67,18 +67,22 @@ namespace BlazorEcommerce.Client.Services.CartService
 
         public async Task RemoveProductFromCart(int productId, int productTypeId)
         {
-            var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
-            if (cart == null)
-                return;
-
-            var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
-            if (cartItem != null)
+            if (await IsUserAuthenticated())
+                await _http.DeleteAsync($"api/cart/{productId}/{productTypeId}");
+            else
             {
-                cart.Remove(cartItem);
+                var cart = await _localStorage.GetItemAsync<List<CartItem>>("cart");
+                if (cart == null)
+                    return;
 
-                await _localStorage.SetItemAsync("cart", cart);
+                var cartItem = cart.Find(x => x.ProductId == productId && x.ProductTypeId == productTypeId);
+                if (cartItem != null)
+                {
+                    cart.Remove(cartItem);
 
-                await GetCartItemCount();
+                    await _localStorage.SetItemAsync("cart", cart);
+
+                }
             }
         }
 
