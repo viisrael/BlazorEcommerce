@@ -4,9 +4,11 @@ namespace BlazorEcommerce.Server.Data
     public class DataContext : DbContext
     {
         public DbSet<User> Users { get; set; }
+        public DbSet<Order> Orders { get; set; }
         public DbSet<Product> Products { get; set; }
         public DbSet<CartItem> CartItems { get; set; }
         public DbSet<Category> Categories { get; set; }
+        public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<ProductType> ProductTypes { get; set; }
         public DbSet<ProductVariant> ProductVariants { get; set; }
 
@@ -23,6 +25,9 @@ namespace BlazorEcommerce.Server.Data
         {
             modelBuilder.Entity<ProductVariant>()
                 .HasKey(p => new { p.ProductId, p.ProductTypeId });
+
+            modelBuilder.Entity<OrderItem>()
+                .HasKey(oi => new {oi.OrderId, oi.ProductId, oi.ProductTypeId });
 
             modelBuilder.Entity<CartItem>()
                 .HasKey(ci => new { ci.ProductId, ci.ProductTypeId, ci.UserId });
