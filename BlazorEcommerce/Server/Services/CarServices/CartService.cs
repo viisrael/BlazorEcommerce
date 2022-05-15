@@ -5,15 +5,15 @@ namespace BlazorEcommerce.Server.Services.CarServices
     public class CartService : ICartService
     {
         private readonly DataContext _context;
+        private readonly IAuthService _authService;
         private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public CartService(DataContext context, IHttpContextAccessor httpContextAccessor)
+        public CartService(DataContext context, IAuthService authService)
         {
             _context = context;
-            _httpContextAccessor = httpContextAccessor;
+            _authService = authService;
         }
 
-        private int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
         public async Task<ServiceResponse<List<CartProductResponse>>> GetCartProductAsync(List<CartItem> cartItems)
         {
             var result = new ServiceResponse<List<CartProductResponse>>()
@@ -56,7 +56,7 @@ namespace BlazorEcommerce.Server.Services.CarServices
 
         public async Task<ServiceResponse<List<CartProductResponse>>> StoreCartItems(List<CartItem> cartItems)
         {
-            cartItems.ForEach(cartItem => cartItem.UserId = GetUserId());
+            cartItems.ForEach(cartItem => cartItem.UserId = _authService.GetUserId());
 
             _context.CartItems.AddRange(cartItems);
             await _context.SaveChangesAsync();
@@ -66,7 +66,7 @@ namespace BlazorEcommerce.Server.Services.CarServices
 
         public async Task<ServiceResponse<int>> GetCartItemsCount()
         {
-            var count = (await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync()).Count;
+            var count = (await _context.CartItems.Where(ci => ci.UserId.Equals(_authService.GetUserId())).ToListAsync()).Count;
 
             return new ServiceResponse<int>
             {
@@ -76,12 +76,12 @@ namespace BlazorEcommerce.Server.Services.CarServices
 
         public async Task<ServiceResponse<List<CartProductResponse>>> GetDbCartProducts()
         {
-            return await GetCartProductAsync(await _context.CartItems.Where(ci => ci.UserId.Equals(GetUserId())).ToListAsync());
+            return await GetCartProductAsync(await _context.CartItems.Where(ci => ci.UserId.Equals(_authService.GetUserId())).ToListAsync());
         }
 
         public async Task<ServiceResponse<bool>> AddToCart(CartItem cartItem)
         {
-            cartItem.UserId = GetUserId();
+            cartItem.UserId = _authService.GetUserId();
 
             var sameItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
                                                                               ci.ProductTypeId == cartItem.ProductTypeId &&
@@ -105,7 +105,7 @@ namespace BlazorEcommerce.Server.Services.CarServices
         {
             var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == cartItem.ProductId &&
                                                                               ci.ProductTypeId == cartItem.ProductTypeId &&
-                                                                              ci.UserId == GetUserId());
+                                                                              ci.UserId == _authService.GetUserId());
 
             if(dbCartItem == null)
                 return new ServiceResponse<bool> { Data= false, Success=false,Message= "Cart item does not exists." };
@@ -121,7 +121,7 @@ namespace BlazorEcommerce.Server.Services.CarServices
         {
             var dbCartItem = await _context.CartItems.FirstOrDefaultAsync(ci => ci.ProductId == productId &&
                                                                                 ci.ProductTypeId == productTypeId &&
-                                                                                ci.UserId == GetUserId());
+                                                                                ci.UserId == _authService.GetUserId());
 
             if (dbCartItem == null)
                 return new ServiceResponse<bool> { Data = false, Success = false, Message = "Cart item does not exists." };
