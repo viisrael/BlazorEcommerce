@@ -2,11 +2,13 @@ global using BlazorEcommerce.Shared;
 global using BlazorEcommerce.Server.Data;
 global using Microsoft.EntityFrameworkCore;
 global using BlazorEcommerce.Server.Services.AuthService;
+global using BlazorEcommerce.Server.Services.OrderServices;
 global using BlazorEcommerce.Server.Services.ProductServices;
 global using BlazorEcommerce.Server.Services.CategoryServices;
+
+using Microsoft.IdentityModel.Tokens;
 using BlazorEcommerce.Server.Services.CarServices;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.IdentityModel.Tokens;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,10 +23,12 @@ builder.Services.AddRazorPages();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICategoryService, CategoryService>();
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options=>
