@@ -10,11 +10,11 @@ namespace BlazorEcommerce.Server.Services.PaymentServices
         private readonly IAuthService _authService;
         private readonly IOrderService _orderService;
 
-        const string secret = "whsec_e2be9eb2e7ba5680ae438e0142d0a744bc254db258a3ed695fe1d69b7bf41812";
+        const string secret = "";
 
         public PaymentService(ICartService cartService, IAuthService authService, IOrderService orderService)
         {
-            StripeConfiguration.ApiKey = "sk_test_51KzqIcLdirp6wkS0orC57cOw6sXWsGJARjfTTIojYLXsM6U5Iw92yT0w67XwF27iCSWrZ6BlprjUEUYPmEE8Dldj00j1RsN7TN";
+            StripeConfiguration.ApiKey = "";
 
             _cartService = cartService;
             _authService = authService;
@@ -45,6 +45,10 @@ namespace BlazorEcommerce.Server.Services.PaymentServices
             var options = new SessionCreateOptions
             {
                 CustomerEmail = _authService.GetUserEmail(),
+                ShippingAddressCollection = new SessionShippingAddressCollectionOptions
+                {
+                    AllowedCountries = new List<string> { "US", "BR"}
+                },
                 PaymentMethodTypes = new List<string>
                 {
                     "card"
