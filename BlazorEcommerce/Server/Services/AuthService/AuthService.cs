@@ -19,6 +19,7 @@ namespace BlazorEcommerce.Server.Services.AuthService
         }
 
         public int GetUserId() => int.Parse(_httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.NameIdentifier));
+        public string GetUserEmail() => _httpContextAccessor.HttpContext.User.FindFirstValue(ClaimTypes.Email);
 
         public async Task<ServiceResponse<bool>> ChangePassword(int userId, string newPassword)
         {
@@ -137,6 +138,11 @@ namespace BlazorEcommerce.Server.Services.AuthService
 
                 return computerHash.SequenceEqual(passwordHash);
             }
+        }
+
+        public async Task<User> GetUserByEmail(string email)
+        {
+            return await _context.Users.FirstOrDefaultAsync(e => e.Email.Equals(email));
         }
     }
 }

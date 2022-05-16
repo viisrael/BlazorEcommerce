@@ -4,6 +4,7 @@ global using Microsoft.EntityFrameworkCore;
 global using BlazorEcommerce.Server.Services.AuthService;
 global using BlazorEcommerce.Server.Services.OrderServices;
 global using BlazorEcommerce.Server.Services.ProductServices;
+global using BlazorEcommerce.Server.Services.PaymentServices;
 global using BlazorEcommerce.Server.Services.CategoryServices;
 
 using Microsoft.IdentityModel.Tokens;
@@ -27,6 +28,7 @@ builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<ICategoryService, CategoryService>();
 
 
