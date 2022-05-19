@@ -22,7 +22,7 @@ namespace BlazorEcommerce.Server.Controllers
             return Ok(result);
         }
         
-        [HttpGet("admin/category"), Authorize(Roles = "Admin")]
+        [HttpGet("admin"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceResponse<List<Category>>>> GetCategoryAdminCategories()
         {
             var result = await _categoryService.GetAdminCategoriesAsync();
@@ -30,7 +30,7 @@ namespace BlazorEcommerce.Server.Controllers
             return Ok(result);
         }
         
-        [HttpDelete("admin/category/{id}"), Authorize(Roles = "Admin")]
+        [HttpDelete("admin/{id}"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceResponse<List<Category>>>> DeleteCategory(int id)
         {
             var result = await _categoryService.DeleteCategoriesAsync(id);
@@ -38,7 +38,7 @@ namespace BlazorEcommerce.Server.Controllers
             return Ok(result);
         }
         
-        [HttpPost("admin/category"), Authorize(Roles = "Admin")]
+        [HttpPost("admin"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceResponse<List<Category>>>> AddCategory(Category category)
         {
             var result = await _categoryService.AddCategoriesAsync(category);
@@ -46,7 +46,7 @@ namespace BlazorEcommerce.Server.Controllers
             return Ok(result);
         }
         
-        [HttpPut("admin/category"), Authorize(Roles = "Admin")]
+        [HttpPut("admin"), Authorize(Roles = "Admin")]
         public async Task<ActionResult<ServiceResponse<List<Category>>>> UpdateCategory(Category category)
         {
             var result = await _categoryService.UpdateCategoriesAsync(category);
